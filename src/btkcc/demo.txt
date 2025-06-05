@@ -1,0 +1,14 @@
+lang = English
+
+[Action]
+color = blue
+effect = natural
+character = sonic
+expression = happy
+initFlag = leftSlide
+endFlag = rightSlide
+bubble = exclamation
+bubbleFlag = true
+response = waitInput1
+responseDelay = 15
+endDelay = 30
