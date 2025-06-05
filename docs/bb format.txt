@@ -1,3 +1,6 @@
+Sonic Rush BB Format
+By Milo Charming Magician
+
 struct_root
 {
     u32 fileCount;

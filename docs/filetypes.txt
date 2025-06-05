@@ -1,3 +1,6 @@
+Sonic Rush File Formats
+By Milo Charming Magician
+
 dat\gmk\*.df - act 3d special sections
 dat\key\*.bin - input demo key data from the DS used to control player during game title
 keydat\*.dat - input demo key data from the DS used to control player & boat during game title for Sonic Rush Adventure

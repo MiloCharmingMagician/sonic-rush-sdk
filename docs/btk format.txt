@@ -1,3 +1,6 @@
+Sonic Rush BTK Format
+By Milo Charming Magician
+
 struct_root
 {
     Header header;
