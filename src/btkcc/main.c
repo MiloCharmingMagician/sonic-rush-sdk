@@ -91,12 +91,12 @@ u32 map_expression(const char *e) {
 
 // Map effect string to int
 u32 map_effect(const char *e) {
-    if (!stricmp(e, "natural")) return 1;       // was "normal"
+    if (!stricmp(e, "natural")) return 1;
     if (!stricmp(e, "explode")) return 2;
     if (!stricmp(e, "glitch")) return 3;
     if (!stricmp(e, "flicking")) return 4;
     if (!stricmp(e, "blank")) return 5;
-    if (!stricmp(e, "windSfx")) return 10;      // renamed eggmanwindsfx
+    if (!stricmp(e, "windSfx")) return 10;
     if (!stricmp(e, "gemSfx")) return 11;
     return 1;
 }
@@ -112,8 +112,8 @@ u32 map_flag(const char *f) {
 // Map bubble string to int
 u32 map_bubble(const char *b) {
     if (!stricmp(b, "none")) return 0;
-    if (!stricmp(b, "neutral")) return 1;    // renamed from normal
-    if (!stricmp(b, "exclamation")) return 2; // word for "!"
+    if (!stricmp(b, "neutral")) return 1;
+    if (!stricmp(b, "exclamation")) return 2;
     return 0;
 }
 
