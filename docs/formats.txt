@@ -1,3 +1,6 @@
+dat\gmk\*.df - act 3d special sections
+dat\key\*.bin - input demo key data from the DS used to control player during game title
+keydat\*.dat - input demo key data from the DS used to control player & boat during game title for Sonic Rush Adventure
 .btk - Cutscene Talk Script
 .pldm - Cutscene Event Script
 .ama - UI Screen Layout File
@@ -8,5 +11,8 @@
 .sld - SoundTest File that contains strings and may contain sound ids
 .ssd - Special Stage global set data may connect to the 7 stages
 .sst - Special Stage Data File, contains objects and settings for each stage but text for goal font text and background to use is hard coded
-dat\gmk\*.df - act 3d special sections
-dat\key\*.bin - input demo key data from the DS used to control player during game title
+.ayk - Talk Event Script, used in Sonic Rush Adventure & Sonic Colors DS
+.sbb - Boat Data File?
+.sbj - Jonny Boat AI Data?
+.bpa - Palette Animation, used in Sonic Rush Adventure & Sonic Colors DS
+.st - SoundTest Data for Sonic Rush Adventure
