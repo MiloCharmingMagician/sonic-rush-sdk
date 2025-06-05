@@ -44,7 +44,6 @@ typedef struct {
 void trim(char *s) {
     char *p;
     int l;
-
     p = s;
     l = (int)strlen(p);
     while (l > 0 && isspace((unsigned char)p[l - 1])) {
@@ -59,14 +58,11 @@ void trim(char *s) {
     }
 }
 
-int stricmp(const char *a, const char *b) {
-    while (*a && *b) {
-        char ca = (char)tolower((unsigned char)*a);
-        char cb = (char)tolower((unsigned char)*b);
-        if (ca != cb) return ca - cb;
-        a++; b++;
+void strip_inline_comment(char *s) {
+    char *hash = strchr(s, '#');
+    if (hash) {
+        *hash = 0;
     }
-    return *a - *b;
 }
 
 // --- Mapping functions ---
@@ -182,7 +178,9 @@ int read_script(const char *filename, BTKFile *btk) {
 
     while (fgets(line, sizeof(line), f)) {
         trim(line);
-        if (line[0] == 0 || line[0] == ';' || line[0] == '#') continue;
+        strip_inline_comment(line);
+        trim(line);
+        if (line[0] == 0 || line[0] == ';') continue;
 
         if (!_stricmp(line, "[Action]")) {
             if (action_index >= MAX_ACTIONS) {
@@ -242,7 +240,6 @@ int write_btk_binary(const char *filename, BTKFile *btk) {
     }
 
     fwrite(&btk->header, sizeof(Header), 1, f);
-
     for (i = 0; i < (int)btk->header.actionCount; i++) {
         fwrite(&btk->actions[i], sizeof(Action), 1, f);
     }
@@ -321,8 +318,8 @@ int main(int argc, char *argv[]) {
     }
 
     printf("Successfully wrote %s\n", outputfile);
-    #ifdef DEBUG
-	system("pause");
-    #endif
+#ifdef DEBUG
+    system("pause");
+#endif
     return 0;
 }

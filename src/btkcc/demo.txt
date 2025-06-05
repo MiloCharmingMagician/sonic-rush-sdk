@@ -1,9 +1,10 @@
 language = English
 
+# Sonic Talk 1
 [Action]
 color = blue
 effect = natural
-character = sonic
+character = knuckles
 expression = happy
 initFlag = leftSlide
 endFlag = rightSlide
