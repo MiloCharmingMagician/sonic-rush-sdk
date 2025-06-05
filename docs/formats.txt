@@ -1,0 +1,12 @@
+.btk - Cutscene Talk Script
+.pldm - Cutscene Event Script
+.ama - UI Screen Layout File
+.bbg - Background Image File for the DS 2D Engine
+.bac - Animation Contrainer File for Sprites on the DS 2D Engine
+.bb - Sonic Rush Archive File
+.dmy - Empty Dummy File
+.sld - SoundTest File that contains strings and may contain sound ids
+.ssd - Special Stage global set data may connect to the 7 stages
+.sst - Special Stage Data File, contains objects and settings for each stage but text for goal font text and background to use is hard coded
+dat\gmk\*.df - act 3d special sections
+dat\key\*.bin - input demo key data from the DS used to control player during game title
