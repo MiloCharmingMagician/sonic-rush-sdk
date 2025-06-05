@@ -1,0 +1,12 @@
+struct_root
+{
+    u32 fileCount;
+    BBRegion* fst[fileCount]; // offset table
+    u8* filedata[fileCount];
+};
+
+struct_BBRegion
+{
+    u32 offset;
+    u32 size;
+};
