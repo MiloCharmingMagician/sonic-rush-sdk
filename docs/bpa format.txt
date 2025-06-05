@@ -1,0 +1,32 @@
+Sonic Rush BPA Format
+By Milo Charming Magician
+
+struct_root
+{
+    Header header;
+    Animation anims[animCount];
+};
+
+struct_Header
+{
+    u32 signature; // #BPA
+    u32 animCount;
+    u32 offsetTable[animCount];
+};
+
+struct_Animation
+{
+    u16 duration;
+    u8 offset;
+    u8 colorCount;
+    u16 frameCount;
+    u16 frameSize;
+    AnimationFrame m_frameData[frameCount];
+};
+
+struct_AnimationFrame
+{
+    u16 duration;
+    u16 unk;
+    u8 rgb[3][colorCount];
+};
