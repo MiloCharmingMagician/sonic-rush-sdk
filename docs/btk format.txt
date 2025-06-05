@@ -1,0 +1,33 @@
+struct_root
+{
+    Header header;
+    Action* actions[actionCount];
+};
+
+struct_Header
+{
+    u32 magic; // #BTK
+    u32 unk;
+    u32 lang; // (1=English, 2=French, 4=Ita)
+    u32 unk;
+    u32 actionCount;
+};
+
+struct_Action
+{
+    u32 barColor;
+    u32 unk;
+    u32 unk;
+    u32 effect; // (1=normal, 2=explode, 3=glitch, 4=flicking, 5=blank, 10=eggmanWindSfx, 11=gemSfx)
+    u32 charType;
+    u32 charEmotion;
+    u32 unk;
+    u32 charInType; // (5=leftSlide)
+    u32 charOutType; // (8=rightSlide)
+    u32 talkBubbleType; // (1=normal, 2=spikey)
+    u32 unk;
+    u32 talkBubbleFlag; // (1=showTalkBubble)
+    u32 eventType; (1-2=wait, 3=continue)
+    u32 eventData;
+    u32 endDelay;
+};
