@@ -1,4 +1,4 @@
-lang = English
+language = English
 
 [Action]
 color = blue
@@ -9,6 +9,6 @@ initFlag = leftSlide
 endFlag = rightSlide
 bubble = exclamation
 bubbleFlag = true
-response = waitInput1
-responseDelay = 15
-endDelay = 30
+response = waitInput2
+responseDelay = 30
+endDelay = 60

@@ -11,7 +11,7 @@ typedef unsigned int u32;
 typedef struct {
     u32 magic;
     u32 unk;
-    u32 lang;
+    u32 language;
     u32 unk2;
     u32 actionCount;
 } Header;
@@ -71,7 +71,7 @@ int stricmp(const char *a, const char *b) {
 
 // --- Mapping functions ---
 
-u32 map_lang(const char *lang) {
+u32 map_language(const char *lang) {
     if (!lang) return 1;
     if (!_stricmp(lang, "english")) return 1;
     if (!_stricmp(lang, "french")) return 2;
@@ -137,7 +137,7 @@ u32 map_response(const char *r) {
 }
 
 u32 map_color(const char *c) {
-    if (!_stricmp(c, "blue")) return 255;
+    if (!_stricmp(c, "blue")) return 31349;
     return (u32)atoi(c);
 }
 
@@ -175,10 +175,10 @@ int read_script(const char *filename, BTKFile *btk) {
     in_action = 0;
     action_index = 0;
     btk->header.actionCount = 0;
-    btk->header.magic = 0x4B54423; // 'BTK#'
+    btk->header.magic = 1263813155; // '#BTK'
     btk->header.unk = 0;
     btk->header.unk2 = 0;
-    btk->header.lang = 1;
+    btk->header.language = 0;
 
     while (fgets(line, sizeof(line), f)) {
         trim(line);
@@ -197,8 +197,8 @@ int read_script(const char *filename, BTKFile *btk) {
 
         if (!in_action) {
             if (parse_key_value(line, &key, &value)) {
-                if (!_stricmp(key, "lang")) {
-                    btk->header.lang = map_lang(value);
+                if (!_stricmp(key, "language")) {
+                    btk->header.language = map_language(value);
                 }
             }
         } else {
@@ -258,11 +258,11 @@ void print_debug(BTKFile *btk) {
     Action *a;
 
     printf("Language: ");
-    switch (btk->header.lang) {
+    switch (btk->header.language) {
     case 1: printf("English\n"); break;
     case 2: printf("French\n"); break;
     case 4: printf("Italian\n"); break;
-    default: printf("Unknown (%u)\n", btk->header.lang); break;
+    default: printf("Unknown (%u)\n", btk->header.language); break;
     }
 
     printf("Actions (%u):\n", btk->header.actionCount);
@@ -321,5 +321,8 @@ int main(int argc, char *argv[]) {
     }
 
     printf("Successfully wrote %s\n", outputfile);
+    #ifdef DEBUG
+	system("pause");
+    #endif
     return 0;
 }
