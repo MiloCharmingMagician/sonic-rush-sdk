@@ -16,3 +16,11 @@ keydat\*.dat - input demo key data from the DS used to control player & boat dur
 .sbj - Jonny Boat AI Data?
 .bpa - Palette Animation, used in Sonic Rush Adventure & Sonic Colors DS
 .st - SoundTest Data for Sonic Rush Adventure
+.at - level attributes
+.bk - metatile mappings
+.ch - graphics data
+.pl - palette data
+.mp - map layout (one has an "_a" suffix, the other a "_b" suffix)
+.rg - ring layout
+.dc - decoration layout
+.ev - object layout
