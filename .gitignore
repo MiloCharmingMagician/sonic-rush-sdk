@@ -1,5 +1,8 @@
 # Prerequisites
 *.d
+*.bat
+*.vcproj.CYNDANERADEV.Cyndanera.user
+*.suo
 
 # Object files
 *.o
@@ -51,3 +54,13 @@ Module.symvers
 Mkfile.old
 dkms.conf
 *.ncb
+
+# Folders
+bin/
+Debug/
+Release/
+files/
+scripts/
+
+# BB Files
+*.btk

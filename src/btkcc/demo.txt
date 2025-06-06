@@ -1,13 +1,27 @@
-language = English
+[Config]
+language = english
+color = blue
 
 # Sonic Talk 1
 [Action]
-color = blue
 effect = natural
-character = knuckles
+character = sonic
 expression = happy
 initFlag = leftSlide
-endFlag = rightSlide
+endFlag = leftSlide
+bubble = neutral
+bubbleFlag = true
+response = waitInput2
+responseDelay = 30
+endDelay = 30
+
+# Eggman Talk 2
+[Action]
+effect = natural
+character = sonic
+expression = happy
+initFlag = leftSlide
+endFlag = leftSlide
 bubble = neutral
 bubbleFlag = true
 response = waitInput2

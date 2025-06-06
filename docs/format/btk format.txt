@@ -14,12 +14,12 @@ struct_Header
     u32 lang; // (1=English, 2=French, 4=Ita)
     u32 unk;
     u32 actionCount;
+    u32 barColor;
+    u32 unk;
 };
 
 struct_Action
 {
-    u32 barColor;
-    u32 unk;
     u32 unk;
     u32 effect; // (1=normal, 2=explode, 3=glitch, 4=flicking, 5=blank, 10=eggmanWindSfx, 11=gemSfx)
     u32 charType;

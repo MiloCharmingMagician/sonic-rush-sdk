@@ -14,20 +14,20 @@ typedef struct {
     u32 language;
     u32 unk2;
     u32 actionCount;
+    u32 color;
+	u32 unk3;
 } Header;
 
 typedef struct {
-    u32 color;
-    u32 unk1;
-    u32 unk2;
+    u32 unk;
     u32 effect;
     u32 character;
     u32 expression;
-    u32 unk3;
+    u32 unk2;
     u32 initFlag;
     u32 endFlag;
     u32 bubble;
-    u32 unk4;
+    u32 unk3;
     u32 bubbleFlag;
     u32 response;
     u32 responseDelay;
@@ -80,6 +80,7 @@ u32 map_character(const char *c) {
     if (!_stricmp(c, "tails")) return 2;
     if (!_stricmp(c, "blaze")) return 3;
     if (!_stricmp(c, "knuckles")) return 4;
+	if (!_stricmp(c, "eggman")) return 8;
     return 0;
 }
 
@@ -151,10 +152,10 @@ int parse_key_value(char *line, char **key, char **value) {
 int read_script(const char *filename, BTKFile *btk) {
     FILE *f;
     char line[MAX_LINES];
-    int in_action;
-    int action_index;
-    char *key;
-    char *value;
+    int in_config = 0;
+    int in_action = 0;
+    int action_index = 0;
+    char *key, *value;
     Action *act;
 
     f = fopen(filename, "rt");
@@ -163,13 +164,13 @@ int read_script(const char *filename, BTKFile *btk) {
         return 0;
     }
 
-    in_action = 0;
-    action_index = 0;
-    btk->header.actionCount = 0;
     btk->header.magic = 1263813155; // '#BTK'
     btk->header.unk = 0;
     btk->header.unk2 = 0;
     btk->header.language = 0;
+    btk->header.color = 0;
+	btk->header.unk3 = 0;
+    btk->header.actionCount = 0;
 
     while (fgets(line, sizeof(line), f)) {
         trim(line);
@@ -177,32 +178,42 @@ int read_script(const char *filename, BTKFile *btk) {
         trim(line);
         if (line[0] == 0 || line[0] == ';') continue;
 
+        if (!_stricmp(line, "[Config]")) {
+            in_config = 1;
+            in_action = 0;
+            continue;
+        }
+
         if (!_stricmp(line, "[Action]")) {
             if (action_index >= MAX_ACTIONS) {
                 printf("Max actions reached\n");
                 break;
             }
             in_action = 1;
+            in_config = 0;
             memset(&btk->actions[action_index], 0, sizeof(Action));
             action_index++;
             continue;
         }
 
-        if (!in_action) {
+        if (in_config) {
             if (parse_key_value(line, &key, &value)) {
                 if (!_stricmp(key, "language")) {
                     btk->header.language = map_language(value);
+                } else if (!_stricmp(key, "color")) {
+                    btk->header.color = map_color(value);
+                } else {
+                    printf("Unknown config key: %s\n", key);
                 }
             }
-        } else {
+        } else if (in_action) {
             if (!parse_key_value(line, &key, &value)) {
                 printf("Invalid line: %s\n", line);
                 continue;
             }
             act = &btk->actions[action_index - 1];
 
-            if (!_stricmp(key, "color")) act->color = map_color(value);
-            else if (!_stricmp(key, "effect")) act->effect = map_effect(value);
+            if (!_stricmp(key, "effect")) act->effect = map_effect(value);
             else if (!_stricmp(key, "character")) act->character = map_character(value);
             else if (!_stricmp(key, "expression")) act->expression = map_expression(value);
             else if (!_stricmp(key, "initFlag")) act->initFlag = map_flag(value);
@@ -212,12 +223,11 @@ int read_script(const char *filename, BTKFile *btk) {
             else if (!_stricmp(key, "response")) act->response = map_response(value);
             else if (!_stricmp(key, "responseDelay")) act->responseDelay = (u32)atoi(value);
             else if (!_stricmp(key, "endDelay")) act->endDelay = (u32)atoi(value);
-            else printf("Unknown key: %s\n", key);
+            else printf("Unknown action key: %s\n", key);
         }
     }
 
     btk->header.actionCount = action_index;
-
     fclose(f);
     return 1;
 }
@@ -257,12 +267,17 @@ void print_debug(BTKFile *btk) {
     default: printf("Unknown (%u)\n", btk->header.language); break;
     }
 
+    printf("Color: ");
+    switch (btk->header.color) {
+    case 31349: printf("Blue\n"); break;
+    default: printf("Unknown (%u)\n", btk->header.color); break;
+    }
+
     printf("Actions (%u):\n", btk->header.actionCount);
 
     for (i = 0; i < btk->header.actionCount; i++) {
         a = &btk->actions[i];
         printf("Action %u:\n", i + 1);
-        printf("  color = %u\n", a->color);
         printf("  effect = %u\n", a->effect);
         printf("  character = %u\n", a->character);
         printf("  expression = %u\n", a->expression);
