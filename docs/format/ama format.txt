@@ -24,7 +24,8 @@ struct_EntryTable
 
 struct_Entry
 {
-    u32 unk[6];
+    u32 flag; // might be flag?
+    u32 unk[5];
     u32 x;
     u32 y;
 };
