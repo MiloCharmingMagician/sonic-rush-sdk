@@ -76,7 +76,6 @@ u32 map_language(const char *lang) {
 }
 
 u32 map_character(const char *c) {
-    if (!_stricmp(c, "none")) return 0;
     if (!_stricmp(c, "sonic")) return 1;
     if (!_stricmp(c, "tails")) return 2;
     if (!_stricmp(c, "blaze")) return 3;
@@ -85,7 +84,6 @@ u32 map_character(const char *c) {
 }
 
 u32 map_expression(const char *e) {
-    if (!_stricmp(e, "none")) return 0;
     if (!_stricmp(e, "happy")) return 1;
     if (!_stricmp(e, "angry")) return 2;
     if (!_stricmp(e, "confused")) return 3;
@@ -105,14 +103,12 @@ u32 map_effect(const char *e) {
 }
 
 u32 map_flag(const char *f) {
-    if (!_stricmp(f, "none")) return 0;
     if (!_stricmp(f, "leftSlide")) return 5;
     if (!_stricmp(f, "rightSlide")) return 8;
     return 0;
 }
 
 u32 map_bubble(const char *b) {
-    if (!_stricmp(b, "none")) return 0;
     if (!_stricmp(b, "neutral")) return 1;
     if (!_stricmp(b, "exclamation")) return 2;
     return 0;
@@ -125,7 +121,6 @@ u32 map_bubbleFlag(const char *bf) {
 }
 
 u32 map_response(const char *r) {
-    if (!_stricmp(r, "none")) return 0;
     if (!_stricmp(r, "waitInput1")) return 1;
     if (!_stricmp(r, "waitInput2")) return 2;
     if (!_stricmp(r, "continue")) return 3;

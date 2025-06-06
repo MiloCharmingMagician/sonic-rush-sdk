@@ -1,0 +1,28 @@
+Demo Script
+-------------------------------------------
+language = english
+
+# Sonic Talk 1
+[Action]
+color = blue
+effect = natural
+character = knuckles
+expression = happy
+initFlag = leftSlide
+endFlag = rightSlide
+bubble = neutral
+bubbleFlag = true
+response = waitInput2
+responseDelay = 30
+endDelay = 60
+------------------------------------------
+
+language: english, french, italian
+color: blue
+effect: natural, explode, glitch, flicking, blank, windSfx, gemSfx
+character: sonic, tails, blaze, knuckles
+expression: happy, angry, confused, sad
+initFlag\endFlag: leftSide, rightSide
+bubble: neutral, exclamation
+bubbleFlag: flase, true
+response: waitInput1, waitInput2, continue
