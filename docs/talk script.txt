@@ -1,10 +1,11 @@
 Demo Script
 -------------------------------------------
+[Config]
 language = english
+color = blue
 
 # Sonic Talk 1
 [Action]
-color = blue
 effect = natural
 character = knuckles
 expression = happy
@@ -17,8 +18,11 @@ responseDelay = 30
 endDelay = 60
 ------------------------------------------
 
+[Config]
 language: english, french, italian
 color: blue
+
+[Action]
 effect: natural, explode, glitch, flicking, blank, windSfx, gemSfx
 character: sonic, tails, blaze, knuckles
 expression: happy, angry, confused, sad
