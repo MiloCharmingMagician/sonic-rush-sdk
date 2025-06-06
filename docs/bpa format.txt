@@ -1,5 +1,4 @@
 Sonic Rush BPA Format
-By Milo Charming Magician
 
 struct_root
 {
