@@ -4,22 +4,22 @@
 
 typedef unsigned int u32;
 
-#pragma pack(push, 1) // disable padding
+#pragma pack(push, 1)
 
 typedef struct {
     u32 magic;       // '#AMA' -> 0x414D4123
     u32 entryCount;
     u32 fixed;       // always 16
-    u32 unk[5];      // zeroed
+    u32 unk[5];      // must be written (zero)
 } Header;
 
 typedef struct {
     u32 offset;
-    u32 unk[7];      // zeroed
+    u32 unk[7];      // must be written (zero)
 } EntryTable;
 
 typedef struct {
-    u32 unk[6];      // zeroed
+    u32 unk[6];      // must be written (zero)
     u32 x;
     u32 y;
 } Entry;
@@ -27,19 +27,19 @@ typedef struct {
 #pragma pack(pop)
 
 #define MAX_ENTRIES 1024
-#define MAX_LINE_LENGTH 256
+#define MAX_LINE_LEN 256
 
 int main(int argc, char* argv[]) {
     char* inputfile;
     char* outputfile;
     FILE* fin;
     FILE* fout;
-    Entry entries[MAX_ENTRIES];
-    EntryTable entryTables[MAX_ENTRIES];
     Header header;
-    char line[MAX_LINE_LENGTH];
+    EntryTable entryTables[MAX_ENTRIES];
+    Entry entries[MAX_ENTRIES];
+    char line[MAX_LINE_LEN];
     int count = 0;
-    int i;
+    int i, j;
     u32 baseOffset;
 
 #ifdef DEBUG
@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
     outputfile = "demo.ama";
 #else
     if (argc < 3) {
-        printf("Usage: %s [INPUT] [OUTPUT]\n", argv[0]);
+        printf("Usage: %s [INPUT.TXT] [OUTPUT.AMA]\n", argv[0]);
         return 1;
     }
     inputfile = argv[1];
@@ -56,7 +56,7 @@ int main(int argc, char* argv[]) {
 
     fin = fopen(inputfile, "r");
     if (!fin) {
-        perror("Failed to open input file");
+        perror("Failed to open input TXT file");
         return 1;
     }
 
@@ -67,9 +67,10 @@ int main(int argc, char* argv[]) {
 
         if (sscanf(line, "%d , %d", &x, &y) == 2) {
             if (count >= MAX_ENTRIES) {
-                printf("Exceeded maximum entry count (%d)\n", MAX_ENTRIES);
+                printf("Exceeded max entry count (%d)\n", MAX_ENTRIES);
                 break;
             }
+
             memset(&entries[count], 0, sizeof(Entry));
             entries[count].x = (u32)x;
             entries[count].y = (u32)y;
@@ -78,20 +79,24 @@ int main(int argc, char* argv[]) {
     }
     fclose(fin);
 
-    header.magic = 0x414D4123; // '#AMA'
+    header.magic = 0x414D4123;
     header.entryCount = (u32)count;
     header.fixed = 16;
-    memset(header.unk, 0, sizeof(header.unk));
+    for (i = 0; i < 5; i++) {
+        header.unk[i] = 0;
+    }
 
     baseOffset = sizeof(Header) + sizeof(EntryTable) * count;
     for (i = 0; i < count; i++) {
         entryTables[i].offset = baseOffset + i * sizeof(Entry);
-        memset(entryTables[i].unk, 0, sizeof(entryTables[i].unk));
+        for (j = 0; j < 7; j++) {
+            entryTables[i].unk[j] = 0;
+        }
     }
 
     fout = fopen(outputfile, "wb");
     if (!fout) {
-        perror("Failed to open output file");
+        perror("Failed to open output AMA file");
         return 1;
     }
 
@@ -100,6 +105,7 @@ int main(int argc, char* argv[]) {
     fwrite(entries, sizeof(Entry), count, fout);
 
     fclose(fout);
+
     printf("Success: Wrote %d entries to %s\n", count, outputfile);
 
 #ifdef DEBUG
