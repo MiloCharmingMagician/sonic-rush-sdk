@@ -1,0 +1,87 @@
+// .bbg format information
+
+// ===================
+// HEADER
+// ===================
+
+// File header, all .bbg files are guaranteed to have a header this size.
+struct Header
+{
+    // Common
+    u32 signature;      // "BBG\0"
+    u32 size;           // size of the entire file, in bytes.
+    u32 pixelOffset;    // offset to PIXELS BLOCK, relative to the start of the file
+    u32 mappingsOffset; // offset to MAPPINGS BLOCK, relative to the start of the file
+    u32 paletteOffset;  // offset to PALETTE BLOCK, relative to the start of the file
+
+    // Rush-only 
+    {
+        u32 format;         // format => (colorFormat & 0xF), unknown flag => (colorFormat & 0x10) != 0
+        u16 width;          // width, in tiles. (sets of 8x8 pixels)
+        u16 height;         // height, in tiles. (sets of 8x8 pixels)
+        u16 paletteIndex;   // palette start index (0-255)
+        u16 paletteBank;    // palette bank offset (sets of 256 colors)
+    }
+
+    // Rush Adventure & Sonic Colors
+    {
+        u16 format;         // format => (colorFormat & 0xF), unknown flag => (colorFormat & 0x10) != 0
+        u16 width;          // width, in tiles. (sets of 8x8 pixels)
+        u16 height;         // height, in tiles. (sets of 8x8 pixels)
+        u16 tileOffset;     // offset in vram to display to, in tiles.
+        u16 paletteRow;     // palette start row (0-15)
+        u16 paletteBank;    // palette bank offset (sets of 256 colors)
+    }
+}
+
+// ===================
+// COMMON
+// ===================
+
+enum ColorFormat
+{
+    FORMAT_0, // 4-bit pixels
+    FORMAT_1, // 8-bit pixels in rush adventure & colors
+    FORMAT_2, // format use is currently unknown.
+    FORMAT_3, // format use is currently unknown.
+    FORMAT_4, // format use is currently unknown.
+    FORMAT_5, // format use is currently unknown.
+    FORMAT_6, // format use is currently unknown.
+}
+
+
+// ====================
+// PALETTE BLOCK
+// ====================
+
+// pixel block contains compressed pixel data, the size of the pixels is determined by Header.format.
+struct PixelBlock
+{
+    // compression header contains "uncompressedSize" which in conjuction with the compression type & param, tells the decompressor how much data to read
+    // standard DS compression applies: 0 => uncompressed, 1 => LZ10, 2 => huffman, 3 => RLE
+    CompressionHeader pixels;
+}
+
+// ====================
+// MAPPINGS BLOCK
+// ====================
+
+// mappings block contains compressed nintendo ds mapping data, each mapping entry is a u16 value.
+struct MappingsBlock
+{
+    // compression header contains "uncompressedSize" which in conjuction with the compression type & param, tells the decompressor how much data to read
+    // standard DS compression applies: 0 => uncompressed, 1 => LZ10, 2 => huffman, 3 => RLE
+    CompressionHeader mappings;
+}
+
+// ====================
+// PALETTE BLOCK
+// ====================
+
+// palette block contains compressed nintendo ds palette data, each color is a u16 value, representing an RGB555 color
+struct PaletteBlock
+{
+    // compression header contains "uncompressedSize" which in conjuction with the compression type & param, tells the decompressor how much data to read
+    // standard DS compression applies: 0 => uncompressed, 1 => LZ10, 2 => huffman, 3 => RLE
+    CompressionHeader palettes;
+}

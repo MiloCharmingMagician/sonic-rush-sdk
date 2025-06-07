@@ -13,19 +13,18 @@ struct_Header
     u32 magic; // #AMA
     u32 entryCount;
     u32 fixed; // always '16'
-    u32 unk[5];
 };
 
 struct_EntryTable
 {
+    u32 unk[5];
     u32 offset;
-    u32 unk[7];
 };
 
 struct_Entry
 {
-    u32 flag; // might be flag?
-    u32 unk[5];
+    u32 unk[2];
     u32 x;
     u32 y;
+    u32 unk[4];
 };

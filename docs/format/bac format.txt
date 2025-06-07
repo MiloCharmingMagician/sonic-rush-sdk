@@ -1,198 +1,312 @@
-Sonic Rush BAC Format
-By Justin Aquadro (Retriever II)
+// .bac format information
 
-This document is incomplete and is not 100% accurate
-Please send additions, corrections to jaquadro@taloncrossing.com
-Last Updated: 7/19/06 @ 2:49AM EDT
+// ===================
+// HEADER
+// ===================
 
-Byte Order: Little Endian
+// File header, all .bac files are guaranteed to have a header this size.
+struct Header
+{
+    u8 signature[3];            // "BAC" signature
+    u8 version;                 // unsure if this is *really* a version signature, but it differs between rush & rush adventure! (00 == rush adventure/colors, 0A == rush)
+    u32 animHeaderOffset;       // offset to INFO BLOCK, relative to the start of the file
+    u32 animSequenceOffset;     // offset to ANIM HEADER SEQUENCE BLOCK, relative to the start of the file
+    u32 frameAssemblyOffset;    // offset to SPRITE BLOCK, relative to the start of the file
+    u32 paletteOffset;          // offset to PALETTE BLOCK, relative to the start of the file
+    u32 spritePixelOffset;      // offset to SPRITE PIXEL BLOCK, relative to the start of the file
+    u32 infoOffset;             // offset to INFO BLOCK, relative to the start of the file
+}
 
-------------------------------------------------------------------------------------------------
-BLOCK HIERARCHY
+// ===================
+// COMMON
+// ===================
 
-                +-------+       +-------+
-                |BLOCK 2|+ . . .|BLOCK 1|+
-                +-------+|      +-------+|
-                 +--|----+       +-------+
-                    |
-                    |
-                +-------+
-                |BLOCK 3|
-                +-------+
-                    |
-    +---------------+---------------+
-    |               |               |
-+-------+       +-------+       +-------+
-|BLOCK 4|       |BLOCK 5|       |BLOCK 6|+
-+-------+       +-------+       +-------+|
-                                 +-------+
+struct CompressionHeader
+{
+    u32 compParam : 4;          // compression param. 4-bytes.
+    u32 compType : 4;           // compression type. 4-bytes.
+    u32 uncompressedSize : 24;  // uncompressed size. 24-bytes.
+}
 
-------------------------------------------------------------------------------------------------
-Header Block
-ADDR            SIZE    DESCRIPTION
-0x0000          4       Header: BAC\x0A
-0x0004          4u      Address Block 2
-0x0008          4u      Address Block 3
-0x000C          4u      Address Block 4
-0x0010          4u      Address Block 5
-0x0014          4u      Address Block 6
-0x0018          4u      Address Block 1? (Constant: 0x1C)
+// general-purpose block header
+struct BlockHeader
+{
+    u32 size; // size of the block, in bytes. (including the 4 bytes used in this struct)
+}
 
-------------------------------------------------------------------------------------------------
-Block 1 (Global Sprite Data? / Animation Sets?)
-ADDR            SIZE    DESCRIPTION
-0x0000          4u      Size of block
-0x0004          2u      Number Block 2s, Number SubBlock 1s in Block 1
-0x0006          2       Unknown (defaults?)
-0x0008          2       Unknown (defaults?)
-0x000A          2       Unknown (defaults?)
-0x000C          2       Unknown (defaults?)
-0x000E          2       Unknown (defaults?)
-0x0010          2       Unknown (defaults?)
-0x0012          2       Unknown (defaults?)
-0x0014          2       Unknown (-1)
-0x0016          2       Unknown (always 0?)
-0x0018          2       Unknown (always 0?)
-0x001A          2       Unknown (always 0?)
-|
-| SubBlock 1 (Animation Set?)
-| 0x0000        2       Unknown
-| 0x0002        2       Unknown
-| 0x0004        2       Unknown
-| 0x0006        2       Unknown
-| 0x0008        2       Unknown
-| 0x000A        2       Unknown
-| 0x000E        2       Unknown
-| 0x000C        2       Unknown
-| 0x0010        2       Unknown (always 0?)
-| 0x0012        2       Unknown (always 0?)
+struct SpritePart
+{
+    u32 pixelOffset; // sprite pixel information, relative to the start of "SPRITE PIXEL BLOCK"
+    u16 tileCount;   // how many tiles (sets of 8x8 pixels) the sprite part contains
+}
 
-------------------------------------------------------------------------------------------------
-Block 2 (Animation Set Mappings?)
-ADDR            SIZE    DESCRIPTION
-0x0000          4u      Size of block
-|
-| SubBlock 1 (Single Mapping?)
-| 0x0000        4u      Offset into Block 3
-| 0x0004        4u      Unknown (always 0?)
+enum PixelFormat
+{
+    // 2D Engine Formats
+    FORMAT_INDEXED4_2D,
+    FORMAT_INDEXED8_2D,
 
-------------------------------------------------------------------------------------------------
-Block 3 (Animation Frames / Set)
-ADDR            SIZE    DESCRIPTION
-0x0000          4u      Size of block
-|
-| SubBlock 1 (Single Frame)*
-| 0x0000        2       ID 01: Frame Offsets
-| 0x0002        2       Length of Frame Offsets SSB, plus ID
-| |
-| | SubSubBlock 1 (Frame Offsets)
-| | 0x0000      4u      Offset into Block 4 (Frame Data)
-| |
-| 0x0004        2       ID 02: Image Parts
-| 0x0006        2       Length of Image Part SubSubBlocks, plus ID
-| |
-| | SubSubBlock 2 (Image Parts)
-| | 0x0000      4u      Offset into Block 6 (Image Data)
-| | 0x0004      4u      Data Size Block 6 / 0x20?
-| |
-| 0x0008        2       ID 03: Palettes
-| 0x000A        2       Length of Palette SubSubBlocks, plus ID
-| |
-| | SubSubBlock 3 (Palettes)
-| | 0x0000      4u      Offset into Block 5 (Palette Data)
-| | 0x0004      4u      Number colors in palette?
-| |
-| 0x000E        2       ID 07: Unknown Purpose
-| 0x000C        2       Length of Unknown Purpose SubSubBlocks, plus ID
-| |
-| | SubSubBlock 4 (Alternate Bounadaries / Collision Masks?  Usually not present)
-| | 0x0000      4       Index (for external identification?)
-| | 0x0004      2       Alternate Boundary X-Coordinate Left Edge?
-| | 0x0006      2       Alternate Boundary Y-Coordinate Top Edge?
-| | 0x0008      2       Alternate Boundary X-Coordinate Right Edge?
-| | 0x000A      2       Alternate Boundary Y-Coordinate Bottom Edge?
-| |
-| 0x0010	2	ID 00: Animation Info
-| 0x0012	2	Length of Animation Info SubSubBlocks, plus ID
-| |
-| | SubSubBlock 5 (Animation Info)
-| | 0x0000      2       Number frames in Set
-| | 0x0002      2       Frame Index
-| | 0x0004      4       Duration of frame in time units?
-|
-0x0004          2       ID 04: Resting/default frame?
-0x0006          2       Length of resting frame data, plus ID?
-0x0008          4u      Offset to one of the frame SubBlocks, usually the first (resting frame?)
+    // 3D Engine Formats
+    FORMAT_RGBA_2D,
+    FORMAT_INDEXED2_3D,
+    FORMAT_INDEXED4_3D,
+    FORMAT_INDEXED8_3D,
+    FORMAT_RGBA_3D,
+    FORMAT_A3I5_TRANSLUCENT_3D,
+    FORMAT_A5I3_TRANSLUCENT_3D,
+    FORMAT_BLOCK_COMPRESSED_3D,
+};
 
-*  There is no gaurentee that any ID/length pair and its corresponding SSB will be present in a
-   given frame.
+// ===================
+// INFO BLOCK
+// ===================
 
-------------------------------------------------------------------------------------------------
-Block 4 (Frame Assembly)
-ADDR            SIZE    DESCRIPTION
-0x0000          4u      Size of block
-|
-| SubBlock 1 (Single Frame Assembly)
-| 0x0000        4u      Number image parts in frame (parts specified in animation frame)
-| 0x0004        2       X-Coordinate Left Edge
-| 0x0006        2       Y-Coordinate Top Edge
-| 0x0008        2       X-Coordinate Right Edge
-| 0x000A        2       Y-Coordinate Bottom Edge
-| 0x000C        2       Hot Spot X-Coordinate
-| 0x000E        2       Hot Spot Y-Coordinate
-| |
-| | SubSubBlock 1 (Image Part Coordinate Offsets)
-| | 0x0000      1       Y-Coordinate Offset from Top Edge
-| | 0x0001      1       Unknown
-| | 0x0002      1       X-Coordinate Offset from Left Edge
-| | 0x0003      1       Unknown
-| | 0x0004      2       Unknown
-| | 0x0006      2       Unknown
-        
-------------------------------------------------------------------------------------------------
-Block 5 (Palettes)
-ADDR            SIZE    DESCRIPTION
-0x0000          4u      Size of block
-|
-| SubBlock 1 (Single Palette)
-| 0x0000        1       Unknown (type?)
-| 0x0001        3       Size of palette
-| |
-| | SubSubBlock 1 (Palette Entry)
-| | 0x0000      2       Palette Entry, 4bpp
+// NOTE: if the info block offset is lower than the header's size, then assume the info block doesn't exist at all!
+// BAC files are generally structred like: HEADER, INFO, ANIM HEADER, ANIM SEQUENCE, SPRITE, SPRITE PALETTE, SPRITE PIXELS
 
-------------------------------------------------------------------------------------------------
-Block 6 (Image Data)
-ADDR            SIZE    DESCRIPTION
-0x0000          4u      Size of block
-|
-| SubBlock 1 (Single Image Part)
-| 0x0000        1       Compression? (0x00=Uncompressed, 0x10=LZSS)
-| 0x0001        3       Size of data region
-| |
-| | SubSubBlock 1 (Pixel Pair)
-| | 0x0000      1       Pixel Pairs
-| |
-| 0x0004-7      1-4     Terminator (-1) (Padding? 1-4 bytes?)
+struct AnimInfo
+{
+    // general-purpose gfx sizes(?)
+    // all known values are for graphics allocation, so it's assumed that unknown values would also be used for that purpose.
+    u16 gfxTileCount_2D_1D;
+    u16 gfxTileCount_1D_64K;
+    u16 gfxTileCount_1D_128K;
+    u16 gfxTileCount_1D_256K;
+    u16 unused1; // unknown, unused in rush games afaik.
+    u16 unused2; // unknown, unused in rush games afaik.
+    u16 unused3; // unknown, unused in rush games afaik.
+    u16 palette3DSize;
+    s32 texture3DSize;
+};
 
-------------------------------------------------------------------------------------------------
-NOTES:
-To save data, some images with larger regions of empty space are broken apart into multiple images,
-and combined after.  These are the frames that have extra long Block 4 sub-blocks.
+struct InfoBlock
+{
+    u16 animCount;
 
-All frames use a Hot Spot from which the dimentions of the frame are calculated.  Image parts are laid
-down according to pixel offsets from the top and left edges of the frame.  It would appear that
-image part dimentions are calculated by filling in to the right and bottom until the other frame
-edges are encountered or other allocated space is encountered.  This could be problematic for some
-placements, but tile constraints could make this possible.
+    // general-purpose gfx sizes?
+    // the values _mostly_ match up with the values in AnimInfo
+    // all known values are for graphics allocation, so it's assumed that unknown values would also be used for that purpose.
+    u16 gfxTileCount_2D_1D;
+    u16 gfxTileCount_1D_64K;
+    u16 gfxTileCount_1D_128K;
+    u16 gfxTileCount_1D_256K;
+    u16 unused1; // unknown, unused in rush games afaik.
+    u16 unused2; // unknown, unused in rush games afaik.
+    u16 unknown; // unknown. but is used in rush adventure for graphics allocation of some sort.
+    u16 unused3; // unknown, unused in rush games afaik.
+    u16 palette3DSize;
+    s32 texture3DSize;
 
-------------------------------------------------------------------------------------------------
-"UNUSUAL" FILES
+    // Per-anim gfx sizes
+    AnimInfo anims[animCount];
+};
 
-ac_sonic.bac (No palette/data B3:SSBs)
-dm_stdm_jpn.bac (Missing some data B3:SSBs)
+// ===================
+// ANIM HEADER BLOCK
+// ===================
 
-------------------------------------------------------------------------------------------------
-CREDIT:
-Contributer             Identifications
-Techokami               Compression byte in Image Data
+struct AnimHeader
+{
+    u32 offset; // anim sequence data offset, relative to the start of the ANIM SEQUENCE BLOCK
+    PixelFormat format;
+};
+
+struct AnimHeaderBlock
+{
+    BlockHeader header;
+
+    AnimHeader anims[1];
+};
+
+// ===================
+// ANIM SEQUENCE BLOCK
+// ===================
+
+struct AnimCommandHeader
+{
+    u16 type; // command type. see "ANIM COMMANDS" for information on types
+    u16 size; // size of the command data, in bytes. (including the 4 bytes used in this struct)
+};
+
+struct AnimSequenceBlock
+{
+    BlockHeader header;
+
+    // this block contains a dynamic amount of commands
+    // for parsing the file, continously parse each command (specified by the command's "type" variable) until the "END ANIMATION" or "END ANIMATION (CHANGE)" command appears.
+    // see "ANIM COMMANDS" section for command types
+    AnimCommandHeader commands[];
+};
+
+// ===================
+// SPRITE BLOCK
+// ===================
+
+struct SpriteHeader
+{
+    u16 spriteCount;
+    u16 useGFXIndex;
+    s16 left;
+    s16 top;
+    s16 right;
+    s16 bottom;
+    Vec2Fx16 hotspot;
+    GXOamAttr spriteList[spriteCount]; // OAM sprite attribute list
+};
+
+struct SpriteBlock
+{
+    BlockHeader header;
+
+    SpriteHeader sprites[];
+};
+
+// ====================
+// SPRITE PALETTE BLOCK
+// ====================
+
+struct PaletteBlock
+{
+    BlockHeader header;
+
+    // all offsets to this block will point to a compression header
+    // compression header contains "uncompressedSize" which in conjuction with the compression type & param, tells the decompressor how much data to read
+    // standard DS compression applies: 0 => uncompressed, 1 => LZ10, 2 => huffman, 3 => RLE
+    CompressionHeader palettes[];
+};
+
+// ===================
+// SPRITE PIXEL BLOCK
+// ===================
+
+struct SpritePixelBlock
+{
+    BlockHeader header;
+
+    // all offsets to this block will point to a compression header
+    // compression header contains "uncompressedSize" which in conjuction with the compression type & param, tells the decompressor how much data to read
+    // standard DS compression applies: 0 => uncompressed, 1 => LZ10, 2 => huffman, 3 => RLE
+    CompressionHeader pixels[];
+};
+
+// ===================
+// ANIM COMMANDS
+// ===================
+
+// TYPE 0: "END FRAME"
+// marks the end of a "frame", this should always come after other commands such as "sprite parts" & "SPRITE ASSEMBLY" & etc.
+// must appear once per frame.
+struct AnimCommand_EndFrame
+{
+    AnimCommandHeader header;
+
+    u16 animFrameCount; // how many frames are contained within the animation (value is likely the same for all frames in a given animation)
+    u16 frameIndex;     // frame id in the animation
+    u16 duration;       // how long this frame lasts for before changing to the next one (measured in in-game frames => 1/60th of a second)
+};
+
+// TYPE 1: "SPRITE ASSEMBLY"
+// determines the frame's sprite assembly
+// may appear 0-1 times per frame.
+struct AnimCommand_SpriteAssembly
+{
+    AnimCommandHeader header;
+
+    u32 assemblyOffset; // sprite assembly information, relative to the start of "SPRITE BLOCK"
+};
+
+// TYPE 2: "SPRITE PARTS"
+// determines the frame's sprite graphics
+// may appear 0-1 times per frame.
+struct AnimCommand_SpriteParts
+{
+    AnimCommandHeader header;
+
+    // list of sprite parts
+    // NOTE: this list size may _not_ be the same value as the corresponding "SpriteHeader.spriteCount".
+    // in that case, "SpriteHeader.spriteCount" should take priority. (The GXOamAttr sprites may use the same pixel offset)
+    SpritePart parts[(header.size - 4) / 8];
+};
+
+// TYPE 3: "SPRITE PALETTE"
+// determines the frame's sprite palette
+// may appear 0-1 times per frame.
+typedef struct AnimCommand_Palette
+{
+    AnimCommandHeader header;
+
+    u32 paletteOffset;  // palette information, relative to the start of "SPRITE PALETTE BLOCK"
+    u16 unknown;        // unknown, not used in-game, but does appear to be set?
+    u16 colorCount;     // how many colours in the palette
+};
+
+// TYPE 4: "END ANIMATION"
+// completes an animation and loops back to a previous frame
+// must appear before any other frame information, and after an "END FRAME" command.
+struct AnimCommand_EndAnimation
+{
+    AnimCommandHeader header;
+
+    u32 loopPoint; // animation loop point, relative to the start of ANIM SEQUENCE BLOCK
+};
+
+// TYPE 5: Unused.
+// Not Implemented.
+struct AnimCommand_Block5
+{
+    AnimCommandHeader header;
+};
+
+// TYPE 6: CUSTOM 1.
+// Per-game assignable command 1, not implemented in any rush game.
+struct AnimCommand_Custom1
+{
+    AnimCommandHeader header;
+};
+
+// TYPE 7: CUSTOM 2 (HITBOX).
+// Per-game assignable command 2, assigned to hitboxes in rush games.
+// may appear none, once, or multiple times per-frame. 'id' will determine what hitbox is being read.
+struct AnimCommand_Custom1
+{
+    AnimCommandHeader header;
+
+    u16 id;             // hitbox id
+    u16 unused;         // padding(?)
+    s16 hitboxLeft;     // hitbox left offset, relative to the sprite center
+    s16 hitboxTop;      // hitbox top offset, relative to the sprite center
+    s16 hitboxRight;    // hitbox right offset, relative to the sprite center
+    s16 hitboxBottom;   // hitbox bottom offset, relative to the sprite center
+};
+
+// TYPE 8: CUSTOM 3.
+// Per-game assignable command 3, not implemented in any rush game.
+struct AnimCommand_Custom1
+{
+    AnimCommandHeader header;
+};
+
+// TYPE 9: "END ANIMATION (CHANGE)"
+// completes an animation and loops back to a previous frame
+// must appear before any other frame information, and after an "END FRAME" command.
+struct AnimCommand_EndAnimation2
+{
+    AnimCommandHeader header;
+
+    u16 nextAnimation;  // next animation id to jump to (jumps to frame 0)
+    u16 _padding;       // padding. unused?
+};
+
+// TYPE 10: Unused.
+// Not Implemented.
+struct AnimCommand_Block10
+{
+    AnimCommandHeader header;
+};
+
+// TYPE 11: Unused.
+// Not Implemented.
+struct AnimCommand_Block11
+{
+    AnimCommandHeader header;
+};

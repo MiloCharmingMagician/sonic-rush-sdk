@@ -10,18 +10,18 @@ typedef struct {
     u32 magic;       // '#AMA' -> 0x414D4123
     u32 entryCount;
     u32 fixed;       // always 16
-    u32 unk[5];      // must be written (zero)
 } Header;
 
 typedef struct {
+	u32 unk[5];      // must be zero
     u32 offset;
-    u32 unk[7];      // must be written (zero)
 } EntryTable;
 
 typedef struct {
-    u32 unk[6];      // must be written (zero)
+	u32 unk[2];      // must be zero
     u32 x;
     u32 y;
+	u32 unk2[4];      // must be zero
 } Entry;
 
 #pragma pack(pop)
@@ -60,6 +60,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    // Parse input lines
     while (fgets(line, sizeof(line), fin)) {
         int x, y;
         if (line[0] == '#' || strlen(line) < 3)
@@ -74,24 +75,30 @@ int main(int argc, char* argv[]) {
             memset(&entries[count], 0, sizeof(Entry));
             entries[count].x = (u32)x;
             entries[count].y = (u32)y;
+
+			for (i = 0; i < 6; i++) {
+                entries[count].unk[i] = 0;
+				entries[count].unk2[i] = 0;
+            }
+
             count++;
         }
     }
     fclose(fin);
 
+    // Build header
     header.magic = 0x414D4123;
     header.entryCount = (u32)count;
     header.fixed = 16;
-    for (i = 0; i < 5; i++) {
-        header.unk[i] = 0;
-    }
 
+    // Entry offset starts AFTER header + entry table block
     baseOffset = sizeof(Header) + sizeof(EntryTable) * count;
+
     for (i = 0; i < count; i++) {
-        entryTables[i].offset = baseOffset + i * sizeof(Entry);
-        for (j = 0; j < 7; j++) {
+		for (j = 0; j < 5; j++) {
             entryTables[i].unk[j] = 0;
         }
+        entryTables[i].offset = baseOffset + sizeof(Entry) * i;
     }
 
     fout = fopen(outputfile, "wb");
