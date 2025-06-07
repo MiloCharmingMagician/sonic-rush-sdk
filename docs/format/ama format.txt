@@ -1,4 +1,4 @@
-Sonic Rush AMA Format
+Sonic Rush AMA Format (WIP)
 By Milo Charming Magician
 
 struct_root
@@ -13,18 +13,33 @@ struct_Header
     u32 magic; // #AMA
     u32 entryCount;
     u32 fixed; // always '16'
+    u32 unk1;
+	u32 unk2;
+	u32 unk3;
+	u32 unk4;
+	u32 unk5;
 };
 
 struct_EntryTable
 {
-    u32 unk[5];
-    u32 offset;
+    u32 offset; // points to entry
+    u32 unk1;
+	u32 unk2;
+	u32 unk3;
+	u32 unk4;
+	u32 unk5;
 };
 
 struct_Entry
 {
-    u32 unk[2];
+    u32 unk1;
+	u32 unk2;
     u32 x;
     u32 y;
-    u32 unk[4];
+	u32 unk3;
+	u32 unk4;
+	u32 unk5;
+	u32 unk6;
+    u32 unk7;
+    u32 unk8;
 };

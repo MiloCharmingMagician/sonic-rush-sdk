@@ -13,15 +13,23 @@ typedef struct {
 } Header;
 
 typedef struct {
-	u32 unk[5];      // must be zero
     u32 offset;
+    u32 unk1;
+	u32 unk2;
+	u32 unk3;
+	u32 unk4;
+	u32 unk5;
 } EntryTable;
 
 typedef struct {
-	u32 unk[2];      // must be zero
     u32 x;
     u32 y;
-	u32 unk2[4];      // must be zero
+	u32 unk1;
+	u32 unk2;
+	u32 unk3;
+	u32 unk4;
+	u32 unk5;
+	u32 unk6;
 } Entry;
 
 #pragma pack(pop)
@@ -73,13 +81,14 @@ int main(int argc, char* argv[]) {
             }
 
             memset(&entries[count], 0, sizeof(Entry));
+			entries[count].unk1 = 0;
+			entries[count].unk2 = 0;
             entries[count].x = (u32)x;
             entries[count].y = (u32)y;
-
-			for (i = 0; i < 6; i++) {
-                entries[count].unk[i] = 0;
-				entries[count].unk2[i] = 0;
-            }
+			entries[count].unk3 = 4096;
+			entries[count].unk4 = 0;
+			entries[count].unk5 = 0;
+			entries[count].unk6 = 0;
 
             count++;
         }
@@ -95,9 +104,12 @@ int main(int argc, char* argv[]) {
     baseOffset = sizeof(Header) + sizeof(EntryTable) * count;
 
     for (i = 0; i < count; i++) {
-		for (j = 0; j < 5; j++) {
-            entryTables[i].unk[j] = 0;
-        }
+		entryTables[i].unk1 = 0;
+		entryTables[i].unk2 = 0;
+		entryTables[i].unk3 = 0;
+		entryTables[i].unk4 = 0;
+		entryTables[i].unk5 = 0;
+
         entryTables[i].offset = baseOffset + sizeof(Entry) * i;
     }
 
