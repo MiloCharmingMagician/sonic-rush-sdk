@@ -4,11 +4,23 @@ By Milo Charming Magician
 struct_root
 {
     Header header;
+    Command* cmd;
 };
 
 struct_Header
 {
     u32 magic; // #BPD
     u32 unk;
-    u32 unk;
 };
+
+struct_Command
+{
+    u32 id;
+    u32* param;
+};
+
+// Command IDs
+5-6 - show bottom screen?
+9 - earth quake
+10 - run talk event : params(talkID)
+15 - load env model
