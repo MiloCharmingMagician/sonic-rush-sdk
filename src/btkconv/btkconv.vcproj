@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="ama2txt"
+	Name="btkconv"
 	ProjectGUID="{B0E7588A-DCE7-4A76-9E0D-2AEBFD26E049}"
-	RootNamespace="ama2txt"
+	RootNamespace="btkconv"
 	>
 	<Platforms>
 		<Platform

@@ -1,12 +1,9 @@
-// Sonic Rush BB Archive Packer
-// By Milo Charming Magician
-
 #include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_FILES 4294967295
+#define MAX_FILES 65535
 #define MAX_PATH 260
 
 typedef unsigned int u32;
@@ -21,7 +18,7 @@ int main(int argc, char *argv[]) {
     HANDLE hFind;
     char *file_paths[MAX_FILES];
     FileEntry *file_entries = NULL;
-    int file_count = 0;
+    u32 file_count = 0;
     u32 current_offset;
     FILE *out, *in;
     char search_path[MAX_PATH];
@@ -29,12 +26,15 @@ int main(int argc, char *argv[]) {
     char *buffer;
     int i;
 
+    printf("Sonic Rush BB Archive Packer v1.0\n");
+    printf("(C) 2025 Milo Charming Magician\n");
+
     #ifdef DEBUG
-    argv[1] = "data";
-    argv[2] = "data"
+    argv[1] = "demo";
+    argv[2] = "demo.bb"
     #else
     if (argc != 3) {
-        printf("Usage: %s <input_folder> <output_name>\n", argv[0]);
+        printf("Usage: %s [INPUT] [OUTPUT]\n", argv[0]);
         return 1;
     }
     #endif
@@ -75,10 +75,6 @@ int main(int argc, char *argv[]) {
         printf("Memory allocation failed.\n");
         return 1;
     }
-
-    strncpy(output_file, argv[2], MAX_PATH - 4);
-    output_file[MAX_PATH - 4] = '\0';
-    strcat(output_file, ".bb");
 
     out = fopen(output_file, "wb");
     if (!out) {

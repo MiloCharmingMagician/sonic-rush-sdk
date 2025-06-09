@@ -7,9 +7,9 @@ typedef unsigned int u32;
 #pragma pack(push, 1)
 
 typedef struct {
-    u32 magic;       // '#AMA' -> 0x414D4123
+    u32 magic;
     u32 entryCount;
-    u32 fixed;       // always 16
+    u32 fixed;
 } Header;
 
 typedef struct {
@@ -50,12 +50,15 @@ int main(int argc, char* argv[]) {
     int i, j;
     u32 baseOffset;
 
+    printf("Sonic Rush AMA Converter v1.0\n");
+    printf("(C) 2025 Milo Charming Magician\n");
+
 #ifdef DEBUG
     inputfile = "demo.txt";
     outputfile = "demo.ama";
 #else
     if (argc < 3) {
-        printf("Usage: %s [INPUT.TXT] [OUTPUT.AMA]\n", argv[0]);
+        printf("Usage: %s [INPUT] [OUTPUT]\n", argv[0]);
         return 1;
     }
     inputfile = argv[1];
@@ -96,7 +99,7 @@ int main(int argc, char* argv[]) {
     fclose(fin);
 
     // Build header
-    header.magic = 0x414D4123;
+    header.magic = 0x414D4123; // #AMA
     header.entryCount = (u32)count;
     header.fixed = 16;
 

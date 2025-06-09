@@ -39,6 +39,69 @@ typedef struct {
     Action actions[MAX_ACTIONS];
 } BTKFile;
 
+// Function declarations
+void trim(char *s);
+void strip_inline_comment(char *s);
+u32 map_language(const char *lang)
+u32 map_character(const char *c);
+u32 map_expression(const char *e);
+u32 map_effect(const char *e);
+u32 map_flag(const char *f);
+u32 map_bubble(const char *b);
+u32 map_bubbleFlag(const char *bf);
+u32 map_response(const char *r);
+u32 map_color(const char *c);
+int parse_key_value(char *line, char **key, char **value);
+int read_script(const char *filename, BTKFile *btk);
+int write_btk_binary(const char *filename, BTKFile *btk);
+void print_debug(BTKFile *btk);
+
+// --- Main ---
+
+int main(int argc, char *argv[]) {
+    char *inputfile;
+    char *outputfile;
+    BTKFile btk;
+    int ret;
+
+    printf("Sonic Rush BTK Converter v1.0\n");
+    printf("(C) 2025 Milo Charming Magician\n");
+
+#ifdef DEBUG
+    inputfile = "demo.txt";
+    outputfile = "demo.btk";
+#else
+    if (argc < 3) {
+        printf("Usage: %s [INPUT] [OUTPUT]\n", argv[0]);
+        return 1;
+    }
+    inputfile = argv[1];
+    outputfile = argv[2];
+#endif
+
+    memset(&btk, 0, sizeof(BTKFile));
+
+    ret = read_script(inputfile, &btk);
+    if (!ret) {
+        printf("Failed to read script.\n");
+        return 1;
+    }
+
+    print_debug(&btk);
+
+    ret = write_btk_binary(outputfile, &btk);
+    if (!ret) {
+        printf("Failed to write BTK file.\n");
+        return 1;
+    }
+
+    printf("Successfully wrote %s\n", outputfile);
+#ifdef DEBUG
+    system("pause");
+#endif
+    return 0;
+}
+
 // --- String helpers ---
 
 void trim(char *s) {
@@ -289,47 +352,4 @@ void print_debug(BTKFile *btk) {
         printf("  responseDelay = %u\n", a->responseDelay);
         printf("  endDelay = %u\n", a->endDelay);
     }
-}
-
-// --- Main ---
-
-int main(int argc, char *argv[]) {
-    char *inputfile;
-    char *outputfile;
-    BTKFile btk;
-    int ret;
-
-#ifdef DEBUG
-    inputfile = "demo.txt";
-    outputfile = "demo.btk";
-#else
-    if (argc < 3) {
-        printf("Usage: %s [INPUT] [OUTPUT]\n", argv[0]);
-        return 1;
-    }
-    inputfile = argv[1];
-    outputfile = argv[2];
-#endif
-
-    memset(&btk, 0, sizeof(BTKFile));
-
-    ret = read_script(inputfile, &btk);
-    if (!ret) {
-        printf("Failed to read script.\n");
-        return 1;
-    }
-
-    print_debug(&btk);
-
-    ret = write_btk_binary(outputfile, &btk);
-    if (!ret) {
-        printf("Failed to write BTK file.\n");
-        return 1;
-    }
-
-    printf("Successfully wrote %s\n", outputfile);
-#ifdef DEBUG
-    system("pause");
-#endif
-    return 0;
 }
