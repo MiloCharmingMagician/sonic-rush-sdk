@@ -1,0 +1,1 @@
+# Test PLDM Event Script for Sonic Rush 1 (WIP)

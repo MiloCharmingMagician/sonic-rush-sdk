@@ -1,3 +1,5 @@
+# Demo Talk Script for Sonic Rush 1
+
 [Config]
 language = english
 color = blue

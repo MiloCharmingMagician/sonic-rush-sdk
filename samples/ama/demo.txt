@@ -1,0 +1,4 @@
+# Demo AMA UI Script for Sonic Rush 1
+
+# Object 1
+503808, 585728
