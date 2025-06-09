@@ -1,0 +1,14 @@
+Sonic Rush BPD Format (WIP)
+By Milo Charming Magician
+
+struct_root
+{
+    Header header;
+};
+
+struct_Header
+{
+    u32 magic; // #BPD
+    u32 unk;
+    u32 unk;
+};
