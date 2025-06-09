@@ -15,7 +15,7 @@ typedef struct {
     u32 unk2;
     u32 actionCount;
     u32 color;
-	u32 unk3;
+    u32 unk3;
 } Header;
 
 typedef struct {
@@ -39,10 +39,10 @@ typedef struct {
     Action actions[MAX_ACTIONS];
 } BTKFile;
 
-// Function declarations
+/* Function declarations */
 void trim(char *s);
 void strip_inline_comment(char *s);
-u32 map_language(const char *lang)
+u32 map_language(const char *lang);
 u32 map_character(const char *c);
 u32 map_expression(const char *e);
 u32 map_effect(const char *e);
@@ -56,8 +56,7 @@ int read_script(const char *filename, BTKFile *btk);
 int write_btk_binary(const char *filename, BTKFile *btk);
 void print_debug(BTKFile *btk);
 
-// --- Main ---
-
+/* Main */
 int main(int argc, char *argv[]) {
     char *inputfile;
     char *outputfile;
@@ -65,7 +64,7 @@ int main(int argc, char *argv[]) {
     int ret;
 
     printf("Sonic Rush BTK Converter v1.0\n");
-    printf("(C) 2025 Milo Charming Magician\n");
+    printf("(C) 2025 Milo Charming Magician\n\n");
 
 #ifdef DEBUG
     inputfile = "demo.txt";
@@ -102,13 +101,10 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-// --- String helpers ---
-
+/* Helpers */
 void trim(char *s) {
-    char *p;
-    int l;
-    p = s;
-    l = (int)strlen(p);
+    char *p = s;
+    int l = (int)strlen(p);
     while (l > 0 && isspace((unsigned char)p[l - 1])) {
         p[--l] = 0;
     }
@@ -128,8 +124,7 @@ void strip_inline_comment(char *s) {
     }
 }
 
-// --- Mapping functions ---
-
+/* Mapping functions */
 u32 map_language(const char *lang) {
     if (!lang) return 1;
     if (!_stricmp(lang, "english")) return 1;
@@ -143,7 +138,7 @@ u32 map_character(const char *c) {
     if (!_stricmp(c, "tails")) return 2;
     if (!_stricmp(c, "blaze")) return 3;
     if (!_stricmp(c, "knuckles")) return 4;
-	if (!_stricmp(c, "eggman")) return 8;
+    if (!_stricmp(c, "eggman")) return 8;
     return 0;
 }
 
@@ -196,11 +191,8 @@ u32 map_color(const char *c) {
     return (u32)atoi(c);
 }
 
-// --- Parsing helpers ---
-
 int parse_key_value(char *line, char **key, char **value) {
-    char *eq;
-    eq = strchr(line, '=');
+    char *eq = strchr(line, '=');
     if (!eq) return 0;
     *eq = 0;
     *key = line;
@@ -210,29 +202,26 @@ int parse_key_value(char *line, char **key, char **value) {
     return 1;
 }
 
-// --- Read text script ---
-
+/* Script reading */
 int read_script(const char *filename, BTKFile *btk) {
     FILE *f;
     char line[MAX_LINES];
-    int in_config = 0;
-    int in_action = 0;
-    int action_index = 0;
+    int in_config = 0, in_action = 0, action_index = 0;
     char *key, *value;
     Action *act;
 
-    f = fopen(filename, "rt");
+    f = fopen(filename, "r");
     if (!f) {
         printf("Failed to open %s\n", filename);
         return 0;
     }
 
-    btk->header.magic = 1263813155; // '#BTK'
+    btk->header.magic = 1263813155;
     btk->header.unk = 0;
     btk->header.unk2 = 0;
     btk->header.language = 0;
     btk->header.color = 0;
-	btk->header.unk3 = 0;
+    btk->header.unk3 = 0;
     btk->header.actionCount = 0;
 
     while (fgets(line, sizeof(line), f)) {
@@ -290,12 +279,10 @@ int read_script(const char *filename, BTKFile *btk) {
         }
     }
 
-    btk->header.actionCount = action_index;
+    btk->header.actionCount = (u32)action_index;
     fclose(f);
     return 1;
 }
-
-// --- Write binary BTK ---
 
 int write_btk_binary(const char *filename, BTKFile *btk) {
     FILE *f;
@@ -315,8 +302,6 @@ int write_btk_binary(const char *filename, BTKFile *btk) {
     fclose(f);
     return 1;
 }
-
-// --- Debug print ---
 
 void print_debug(BTKFile *btk) {
     unsigned int i;

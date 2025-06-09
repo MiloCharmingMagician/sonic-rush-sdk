@@ -1,22 +1,22 @@
-Sonic Rush File Formats
+Sonic Rush Engine File Formats
 By Milo Charming Magician
 
 dat\gmk\*.df - act 3d special sections
 dat\key\*.bin - input demo key data from the DS used to control player during game title
 keydat\*.dat - input demo key data from the DS used to control player & boat during game title for Sonic Rush Adventure
-.btk - Cutscene Talk Script
-.pldm - Cutscene Event Script
-.ama - UI Screen Layout File
+.btk - Cutscene Talk Action Data (Used in Sonic Rush 1)
+.pld - Cutscene Event Data (Used in Sonic Rush 1)
+.ama - UI Actor Layout File (Used in Sonic Rush 1)
 .bbg - Background Image File for the DS 2D Engine
-.bac - Animation Contrainer File for Sprites on the DS 2D Engine
-.bb - Sonic Rush Archive File
+.bac - Animation Container File for Sprites on the DS 2D Engine
+.bb - Sonic Rush Archive File (Only contains files, no filenames exist)
 .dmy - Empty Dummy File
-.sld - SoundTest File that contains strings and may contain sound ids
+.sld - SoundTest File that contains strings and may contain sound ids (Used in Sonic Rush 1)
 .ssd - Special Stage global set data may connect to the 7 stages
 .sst - Special Stage Data File, contains objects and settings for each stage but text for goal font text and background to use is hard coded
-.ayk - Talk Event Script, used in Sonic Rush Adventure & Sonic Colors DS
-.sbb - Boat Data File?
-.sbj - Jonny Boat AI Data?
+.ayk - Event Script, used for text base and 3d ingame cutscenes (used in Sonic Rush Adventure, Sonic Colors DS)
+.sbb - Sonic Boat Layout
+.sbj - Jonny Boat Input Actions
 .bpa - Palette Animation, used in Sonic Rush Adventure & Sonic Colors DS
 .st - SoundTest Data for Sonic Rush Adventure
 .at - level attributes
@@ -25,5 +25,7 @@ keydat\*.dat - input demo key data from the DS used to control player & boat dur
 .pl - palette data
 .mp - map layout (one has an "_a" suffix, the other a "_b" suffix)
 .rg - ring layout
+.ca - camera layout (tile data if it should be bottom or top screen)
 .dc - decoration layout
+.df - unsure type of level data? (Needs more info)
 .ev - object layout

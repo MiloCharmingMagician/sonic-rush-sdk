@@ -1,6 +1,7 @@
 # Prerequisites
 *.d
-*.bat
+
+# Visual Studio
 *.vcproj.CYNDANERADEV.Cyndanera.user
 *.suo
 
@@ -59,8 +60,6 @@ dkms.conf
 bin/
 Debug/
 Release/
-files/
-scripts/
 
 # BB Files
 *.btk

@@ -4,9 +4,11 @@
 #include <string.h>
 
 #define MAX_FILES 65535
+#ifndef MAX_PATH
 #define MAX_PATH 260
+#endif
 
-typedef unsigned int u32;
+typedef unsigned long u32;
 
 typedef struct {
     u32 offset;
@@ -17,31 +19,38 @@ int main(int argc, char *argv[]) {
     WIN32_FIND_DATA fd;
     HANDLE hFind;
     char *file_paths[MAX_FILES];
-    FileEntry *file_entries = NULL;
-    u32 file_count = 0;
+    FileEntry *file_entries;
+    u32 file_count;
     u32 current_offset;
-    FILE *out, *in;
+    FILE *out;
+    FILE *in;
     char search_path[MAX_PATH];
     char output_file[MAX_PATH];
     char *buffer;
     int i;
 
-    printf("Sonic Rush BB Archive Packer v1.0\n");
-    printf("(C) 2025 Milo Charming Magician\n");
+    file_entries = NULL;
+    file_count = 0;
+    buffer = NULL;
 
-    #ifdef DEBUG
+    printf("Sonic Rush BB Archive Packer v1.0\n");
+    printf("(C) 2025 Milo Charming Magician\n\n");
+
+#ifdef DEBUG
     argv[1] = "demo";
-    argv[2] = "demo.bb"
-    #else
+    argv[2] = "demo.bb";
+#else
     if (argc != 3) {
         printf("Usage: %s [INPUT] [OUTPUT]\n", argv[0]);
         return 1;
     }
-    #endif
+#endif
 
     strncpy(search_path, argv[1], MAX_PATH - 3);
     search_path[MAX_PATH - 3] = '\0';
     strcat(search_path, "\\*");
+
+    _snprintf(output_file, MAX_PATH, "%s", argv[2]);
 
     hFind = FindFirstFile(search_path, &fd);
     if (hFind == INVALID_HANDLE_VALUE) {
@@ -51,7 +60,9 @@ int main(int argc, char *argv[]) {
 
     do {
         if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-            if (file_count >= MAX_FILES) break;
+            if (file_count >= MAX_FILES) {
+                break;
+            }
 
             file_paths[file_count] = (char *)malloc(MAX_PATH);
             if (!file_paths[file_count]) {
@@ -59,7 +70,8 @@ int main(int argc, char *argv[]) {
                 FindClose(hFind);
                 return 1;
             }
-            snprintf(file_paths[file_count], MAX_PATH, "%s\\%s", argv[1], fd.cFileName);
+
+            _snprintf(file_paths[file_count], MAX_PATH, "%s\\%s", argv[1], fd.cFileName);
             file_count++;
         }
     } while (FindNextFile(hFind, &fd));
@@ -82,14 +94,12 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    // Write file count as u32
     fwrite(&file_count, sizeof(u32), 1, out);
 
-    // Reserve space for file entries
     current_offset = sizeof(u32) + file_count * sizeof(FileEntry);
     fseek(out, current_offset, SEEK_SET);
 
-    for (i = 0; i < file_count; i++) {
+    for (i = 0; i < (int)file_count; i++) {
         in = fopen(file_paths[i], "rb");
         if (!in) {
             printf("Error opening file: %s\n", file_paths[i]);
@@ -119,15 +129,21 @@ int main(int argc, char *argv[]) {
         current_offset += file_entries[i].length;
     }
 
-    // Write file entries table (offset + length)
     fseek(out, sizeof(u32), SEEK_SET);
     fwrite(file_entries, sizeof(FileEntry), file_count, out);
 
     fclose(out);
 
-    for (i = 0; i < file_count; i++) free(file_paths[i]);
+    for (i = 0; i < (int)file_count; i++) {
+        free(file_paths[i]);
+    }
     free(file_entries);
 
     printf("Packed %d file(s) into %s\n", file_count, output_file);
+
+#ifdef DEBUG
+    system("pause");
+#endif
+
     return 0;
 }

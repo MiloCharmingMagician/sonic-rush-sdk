@@ -1,0 +1,17 @@
+struct_root
+{
+    Header header;
+};
+
+struct_Header
+{
+    u32 magic; // #AYK
+    u32 textSize;
+    u32 textOffset;
+    u32 entryAddress;
+    u32 rodataSize;
+    u32 rodataAddress;
+    u32 dataSize;
+    u32 dataAddress;
+    u32 bssSize;
+};

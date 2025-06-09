@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="bbpacker"
+	Name="aykcc"
 	ProjectGUID="{B0E7588A-DCE7-4A76-9E0D-2AEBFD26E049}"
-	RootNamespace="bbpacker"
+	RootNamespace="aykcc"
 	>
 	<Platforms>
 		<Platform
