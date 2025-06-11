@@ -1,11 +1,15 @@
 struct_root
 {
     Header header;
+    s32 textSegment[textSize];
+    s32 rodataSegmentp[rodataSize];
+    s32 dataSegmentp[dataSize];
+    s32 bssSegment[bssSize];
 };
 
 struct_Header
 {
-    u32 magic; // #AYK
+    u32 magic; // AYK
     u32 textSize;
     u32 textOffset;
     u32 entryAddress;
